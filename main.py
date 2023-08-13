@@ -44,7 +44,6 @@ def sort(library, extension, file):
         os.makedirs(new_dir)
     is_recorded = False
     for key, ext_group in library.items():
-        #print(key, ext_group)
         for ext_example in ext_group:
             if extension.strip().lower() == ext_example.strip().lower():
                 new_group_dir = f'{new_dir}/{key}'
@@ -87,7 +86,7 @@ def translate(name):
 
 if __name__ == '__main__':
 
-    
+
     library = {'images':('JPEG', 'PNG', 'JPG', 'SVG'),
             'video':('AVI', 'MP4', 'MOV', 'MKV'),
             'documents':('DOC', 'DOCX', 'TXT', 'PDF', 'XLSX', 'PPTX'),
@@ -120,7 +119,6 @@ if __name__ == '__main__':
     for file in list_files:
         filename = file.split("/")[-1]  # Получаем имя файла с расширением
         extension = file.split(".")[-1]  # Получаем расширение файла
-        #print(extension)
         sort(library, extension, file)
 
     print('Файлы отсортированы')
@@ -128,9 +126,6 @@ if __name__ == '__main__':
     archive_dir = f'{os.path.dirname(real_path)}/{os.path.basename(real_path)}_sorted/archives'
     if os.path.exists(archive_dir):
         print('Обнаружены архивы, приступаем к распаковке')
-        #unpacked_dir = archive_dir + '/unpacked'
-        #if not os.path.exists(unpacked_dir):
-            #os.makedirs(unpacked_dir)
         arc_files = list_files_recursive(archive_dir)
         for file in arc_files:
             file = re.sub(r'[\\]', '/', file) # Полный путь к файлу
