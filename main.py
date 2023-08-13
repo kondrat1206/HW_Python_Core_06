@@ -29,7 +29,7 @@ def normalize(dir):
             #print(f"Нормализуем файл, расположенный по пути {path}")
             sort_dir = path.split(new_dir + '/')[-1].split('/')[0]
             #print(sort_dir)
-            if sort_dir != 'archives' or sort_dir != 'unknown':
+            if sort_dir != 'archives' and sort_dir != 'unknown':
                 trans_filename = translate(filename)
                 new_filename = re.sub(r'[^a-zA-Z0-9]', '_', trans_filename.strip())
                 new_file = path + new_filename + '.' + ext
@@ -85,69 +85,71 @@ def translate(name):
     return name
             
 
+if __name__ == '__main__':
 
-library = {'images':('JPEG', 'PNG', 'JPG', 'SVG'),
-           'video':('AVI', 'MP4', 'MOV', 'MKV'),
-           'documents':('DOC', 'DOCX', 'TXT', 'PDF', 'XLSX', 'PPTX'),
-           'audio':('MP3', 'OGG', 'WAV', 'AMR'),
-           'archives':('ZIP', 'GZ', 'TAR'),
-           'scripts':('JS', 'CSS')
-           }
-
-
-
-if len(sys.argv) < 2:
-    print("Отсутствует аргумент командной строки. Пожалуйста, укажите путь к вашей папке.")
-    print("Например: main.py c:/Users/Name/Desktop/Мотлох")
-    exit()
-else:
-    path_dir = sys.argv[1]
-
-if os.path.exists(path_dir) and os.path.isdir(path_dir):
-    real_path = re.sub(r'[\\]', '/', os.path.normpath(os.path.realpath(path_dir)))
-    print("Папка существует.")
-    print(f"Приступаю к разбору папки {real_path}")
-else:
-    print(f"Папка '{path_dir}' не существует. попробуйте ввести путь еще раз")
-    exit()
-
-new_dir = re.sub(r'[\\]', '/', f'{os.path.dirname(real_path)}/{os.path.basename(real_path)}_sorted')
-if os.path.exists(new_dir):
-    shutil.rmtree(new_dir)
-list_files = list_files_recursive(real_path)
-for file in list_files:
-    filename = file.split("/")[-1]  # Получаем имя файла с расширением
-    extension = file.split(".")[-1]  # Получаем расширение файла
-    #print(extension)
-    sort(library, extension, file)
-
-print('Файлы отсортированы')
-
-archive_dir = f'{os.path.dirname(real_path)}/{os.path.basename(real_path)}_sorted/archives'
-if os.path.exists(archive_dir):
-    print('Обнаружены архивы, приступаем к распаковке')
-    #unpacked_dir = archive_dir + '/unpacked'
-    #if not os.path.exists(unpacked_dir):
-        #os.makedirs(unpacked_dir)
-    arc_files = list_files_recursive(archive_dir)
-    for file in arc_files:
-        file = re.sub(r'[\\]', '/', file) # Полный путь к файлу
-        filename_ext = file.split("/")[-1]  # Получаем имя файла с расширением
-        name_parts = filename_ext.split('.')
-        ext = name_parts[-1]                   # Получаем расширение
-        filename = '.'.join(name_parts[:-1])   # получаем имя без расширения
-        unpacked_dir = archive_dir + "/" + filename
-        if not os.path.exists(unpacked_dir):
-            os.makedirs(unpacked_dir)
-        shutil.unpack_archive(file, unpacked_dir)
+    
+    library = {'images':('JPEG', 'PNG', 'JPG', 'SVG'),
+            'video':('AVI', 'MP4', 'MOV', 'MKV'),
+            'documents':('DOC', 'DOCX', 'TXT', 'PDF', 'XLSX', 'PPTX'),
+            'audio':('MP3', 'OGG', 'WAV', 'AMR'),
+            'archives':('ZIP', 'GZ', 'TAR'),
+            'scripts':('JS', 'CSS')
+            }
 
 
-    print("Архивы распакованы, их содержимое отсортировано")
 
-else:
-    print('Архивы не обнаружены')
+    if len(sys.argv) < 2:
+        print("Отсутствует аргумент командной строки. Пожалуйста, укажите путь к вашей папке.")
+        print("Например: main.py c:/Users/Name/Desktop/Мотлох")
+        exit()
+    else:
+        path_dir = sys.argv[1]
 
-normalize(new_dir)
+    if os.path.exists(path_dir) and os.path.isdir(path_dir):
+        real_path = re.sub(r'[\\]', '/', os.path.normpath(os.path.realpath(path_dir)))
+        print("Папка существует.")
+        print(f"Приступаю к разбору папки {real_path}")
+    else:
+        print(f"Папка '{path_dir}' не существует. попробуйте ввести путь еще раз")
+        exit()
 
-print('Имена файлов, за исключением неизвестных типов и распакованных архивов - нормализованы. Завершение работы')
-print(f'Ваши файлы отсортированы в директории {new_dir}')
+    new_dir = re.sub(r'[\\]', '/', f'{os.path.dirname(real_path)}/{os.path.basename(real_path)}_sorted')
+    if os.path.exists(new_dir):
+        shutil.rmtree(new_dir)
+    list_files = list_files_recursive(real_path)
+    for file in list_files:
+        filename = file.split("/")[-1]  # Получаем имя файла с расширением
+        extension = file.split(".")[-1]  # Получаем расширение файла
+        #print(extension)
+        sort(library, extension, file)
+
+    print('Файлы отсортированы')
+
+    archive_dir = f'{os.path.dirname(real_path)}/{os.path.basename(real_path)}_sorted/archives'
+    if os.path.exists(archive_dir):
+        print('Обнаружены архивы, приступаем к распаковке')
+        #unpacked_dir = archive_dir + '/unpacked'
+        #if not os.path.exists(unpacked_dir):
+            #os.makedirs(unpacked_dir)
+        arc_files = list_files_recursive(archive_dir)
+        for file in arc_files:
+            file = re.sub(r'[\\]', '/', file) # Полный путь к файлу
+            filename_ext = file.split("/")[-1]  # Получаем имя файла с расширением
+            name_parts = filename_ext.split('.')
+            ext = name_parts[-1]                   # Получаем расширение
+            filename = '.'.join(name_parts[:-1])   # получаем имя без расширения
+            unpacked_dir = archive_dir + "/" + filename
+            if not os.path.exists(unpacked_dir):
+                os.makedirs(unpacked_dir)
+            shutil.unpack_archive(file, unpacked_dir)
+
+
+        print("Архивы распакованы, их содержимое отсортировано")
+
+    else:
+        print('Архивы не обнаружены')
+
+    normalize(new_dir)
+
+    print('Имена файлов, за исключением неизвестных типов и распакованных архивов - нормализованы. Завершение работы')
+    print(f'Ваши файлы отсортированы в директории {new_dir}')
